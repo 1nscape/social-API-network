@@ -16,5 +16,32 @@ module.exports = {
             )
             .catch((err) => res.status(500).json(err));
     },
+    createThought(req, res) {
+        Thought.create(req.body)
+            .then((thoughtData) => !thoughtData ? res.status(404).json('User cannot be found')
+                : User.findOneAndUpdate({ _id: req.body.userId },
+                    { $addToSet: 
+                    { thoughts: thoughtData._id } },
+                    { runValidators: true, new: true },
+                ))
+            .then(() => res.json({ message: 'Thought has been added' }))
+            .catch((err) => res.status(500).json(err));  
+          
+    },
+    
+    updateThought(req, res) {
+        Thought.findOneAndUpdate(
+            { _id: req.params.thoughtId },
+            { $set: req.body},
+            { runValidators: true, new: true },
+        )
+    .then(() => res.json({ message: 'Thought has been updated' }))
+    .catch((err) => res.status(500).json(err));
+    },
+
+    deleteThought(req, res) {
+        Thought.findOneAndDelete({_id: req.params.thoughtId})
+        .then(() => res.json({ message:'Thought has been deleted' }))
+        .catch((err) => res.status(500).json(err));
+    },
 };
- 
